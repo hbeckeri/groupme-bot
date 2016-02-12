@@ -25,9 +25,9 @@ setInterval(function(){
 app.listen(PORT, function () {
     console.log('listening on port %s', PORT);
 });
-app.post('/incoming', function(req, res){
-    var json = req.body;
-    handleIncomingRequests(json);
+app.get('/say', function(req, res){
+    var message = req.query.message;
+    exampleBot.echo(message);
     res.send('OK');
 });
 app.get('/users', function(req, res) {
