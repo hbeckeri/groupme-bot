@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>RugbyBot</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+
+  </head>
+  <body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-header">
+                    <h1>
+                        Bot <small id="room"></small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-4">
+                        <div id="users"class="list-group">
+                             <a href="#" class="list-group-item active">Users</a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                    </div>
+                    <div class="col-md-4">
+                        <div id="groups" class="list-group">
+                             <a href="#" class="list-group-item active">Groups</a>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </body>
+
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+   <script>
+        $(document).ready(function () {
+            function addGroup(name, id) {
+                $('#groups').append('<div class="list-group-item">'+'<h4 class="list-group-item-heading">'+ name +'</h4>'+'<p class="list-group-item-text">'+'group_id: '+id+'</p></div>');
+            }
+            function addUser(name, group_id, user_id) {
+                $('#users').append('<div class="list-group-item">'+'<h4 class="list-group-item-heading">'+ name +'</h4>'+'<p class="list-group-item-text">'+'user_id: '+user_id+'</p>'+'<p class="list-group-item-text">'+'group_id: '+group_id+'</p></div>');
+            }
+            $.get('/users', function(data) {
+                data.forEach(function(x) {
+                    addUser(x.name, x.group_id, x.user_id);
+                });
+            });
+            $.get('/groups', function(data) {
+                var group_id;
+                $.get('/room', function(group_id){
+                    data.forEach(function(x) {
+                        addGroup(x.name, x.group_id);
+                        if(x.group_id == group_id) {
+                            $('#room').text('currently in '+ x.name);
+                        }
+                    });
+                });
+            });
+        });
+
+    </script>
+</html>
