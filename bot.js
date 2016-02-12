@@ -50,7 +50,7 @@ var bot = {
      */
     register: function() {
         var url = 'https://api.groupme.com/v3/bots?token=' + ACCESS_TOKEN;
-        var name = bot.BOT_NAME + (Math.round(Math.random() * 10000));
+        var name = bot.BOT_NAME;
         request( { url : url, method : 'POST', body : JSON.stringify({bot: { name: name, group_id: bot.GROUP_ID, callback_url: BOT_URL}}) },
             function(error, response, body) {
                 var url2 = 'https://api.groupme.com/v3/bots?token=' + ACCESS_TOKEN;
@@ -207,7 +207,6 @@ var bot = {
             }
         });
     },
-
 
     /**
      * Like a message
