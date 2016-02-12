@@ -5,13 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>RugbyBot</title>
+    <title>Groupme Bot</title>
 
     <meta name="description" content="Source code generated using layoutit.com">
     <meta name="author" content="LayoutIt!">
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-
 
   </head>
   <body>
@@ -64,6 +63,7 @@
             $.get('/groups', function(data) {
                 var group_id;
                 $.get('/room', function(group_id){
+                    console.log(group_id)
                     data.forEach(function(x) {
                         addGroup(x.name, x.group_id);
                         if(x.group_id == group_id) {
