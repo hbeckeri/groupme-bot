@@ -15,14 +15,14 @@ var bot = {
     bot_id: 0,
     BOT_NAME: config.BOT_NAME,
     GROUP_ID: config.GROUP_ID,
-    lastMessage: '',
+    lastMessage: '',/**/
 
     /**
      * Displays a message in chat
      * @param message to send
      */
     echo: function(message) {
-        console.log(message);
+        console.log(bot.BOT_NAME + "says: " + message);
         var url = 'https://api.groupme.com/v3/bots/post';
         request({ url: url, method:'POST', body: JSON.stringify({bot_id: bot.bot_id, text: message})}, function(err, res, body){
         });
@@ -215,8 +215,20 @@ var bot = {
     like: function(message_id) {
         var url = 'https://api.groupme.com/v3/messages/'+ bot.GROUP_ID +'/' + message_id +'/like?token=' + ACCESS_TOKEN;
         request({ url: url, method:'POST'}, function(err, res, body){});
+    },
+
+    /**
+     * Process an image with the groupme image processing service
+     * @param imageUrl
+     * @param callback
+     */
+    processImage: function(imageUrl, callback) {
+        var url = 'https://image.groupme.com/pictures?access_token=' + ACCESS_TOKEN;
+        request({ url: url, method:'POST', file: imageUrl}, function(err, res, body){
+            var json = JSON.parse(body).response;
+            callback(body);
+        });
     }
 };
-
 
 module.exports = bot;
