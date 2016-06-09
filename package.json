@@ -1,0 +1,20 @@
+{
+  "name": "groupme-bot",
+  "version": "1.0.0",
+  "description": "A framework for interacting with the groupme api",
+  "private": true,
+  "scripts": {
+    "start": "node_modules/foreman/nf.js --trim 0 start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:hbeckeri/groupme-bot.git"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "fs": "0.0.2",
+    "http": "0.0.0",
+    "request": "^2.72.0"
+  }
+}
