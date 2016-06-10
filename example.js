@@ -48,6 +48,6 @@ app.get('/update', function(req, res) {
 app.get('/room', function(req, res) {
     res.send(exampleBot.GROUP_ID.toString());
 });
-app.get('/debug', function(req, res) {
+app.get('/', function(req, res) {
     res.sendFile(__dirname + '/debug.html');
 });

@@ -1,21 +1,17 @@
+// Get environment variables
+require('dotenv').config({silent: true});
+
 var request = require('request');
-var bodyParser = require('body-parser');
-var jsonParser = bodyParser.json();
-var util = require('util');
-var fs = require('fs');
 
-var file = fs.readFileSync("config.json");
-var config = JSON.parse(file);
-
-var ACCESS_TOKEN = config.ACCESS_TOKEN;
-var BOT_URL = config.BOT_URL;
+var ACCESS_TOKEN = process.env.ACCESS_TOKEN;
+var BOT_URL = process.env.BOT_URL;
 
 var bot = {
     users:  [],
     bot_id: 0,
-    BOT_NAME: config.BOT_NAME,
-    GROUP_ID: config.GROUP_ID,
-    lastMessage: '',/**/
+    BOT_NAME: process.env.BOT_NAME,
+    GROUP_ID: process.env.GROUP_ID,
+    lastMessage: '',
 
     /**
      * Displays a message in chat
