@@ -5,7 +5,7 @@ var jsonParser = bodyParser.json();
 app.use(jsonParser);
 var exampleBot = require('./bot');
 
-var PORT = 8080;
+var PORT = 80;
 
 /**
  * Updates the bot. Ensures only 1 bot after restart.

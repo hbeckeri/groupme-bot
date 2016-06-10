@@ -9,8 +9,8 @@ var BOT_URL = process.env.BOT_URL;
 var bot = {
     users:  [],
     bot_id: 0,
-    BOT_NAME: process.env.BOT_NAME,
-    GROUP_ID: process.env.GROUP_ID,
+    BOT_NAME: 'MyBot',
+    GROUP_ID: '',
     lastMessage: '',
 
     /**
