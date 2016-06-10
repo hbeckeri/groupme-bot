@@ -2,8 +2,11 @@
 
 A node.js groupme bot module.
 
-First make sure to create `.env` and populate it with your access token, group id, callback url and bot name. If you do not know what these values are make sure
-you have created a developer account and made an application with groupme. There is a sample env file to get you started.
+## Getting Started
 
-To run the example use `npm start` then visit `localhost:8080` to see some functionality of the bot
+1. Create `.env` from the `sample.env`
+2. run `npm install`
+3. run `npm start`
+4. In the browser go to `localhost:8080` to see some fuctionality
 
+If you would like to create your own bot, just require `bot.js` in your project
