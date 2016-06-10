@@ -10,3 +10,4 @@ A node.js groupme bot module.
 4. In the browser go to `localhost:8080` to see some fuctionality
 
 If you would like to create your own bot, just require `bot.js` in your project
+
