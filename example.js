@@ -7,21 +7,6 @@ var exampleBot = require('./bot');
 
 var PORT = 80;
 
-/**
- * Updates the bot. Ensures only 1 bot after restart.
- */
-function update() {
-    exampleBot.unregister();
-    exampleBot.register();
-    exampleBot.updateUsers();
-}
-
-//update at startup then every hour
-update();
-setInterval(function(){
-    update();
-}, 3600000);
-
 app.listen(PORT, function () {
     console.log('listening on port %s', PORT);
 });
