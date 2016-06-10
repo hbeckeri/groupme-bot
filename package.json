@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A framework for interacting with the groupme api",
   "private": true,
+  "engines": {
+    "node": "6.2.0"
+  },
   "scripts": {
     "start": "node example.js"
   },
