@@ -5,10 +5,8 @@ var jsonParser = bodyParser.json();
 app.use(jsonParser);
 var exampleBot = require('./bot');
 
-var PORT = 80;
-
-app.listen(PORT, function () {
-    console.log('listening on port %s', PORT);
+app.listen(process.env.PORT, function () {
+    console.log('listening on port %s', process.env.PORT);
 });
 app.get('/say', function(req, res){
     var message = req.query.message;
