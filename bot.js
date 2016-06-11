@@ -1,64 +1,92 @@
 // Get environment variables
 require('dotenv').config({silent: true});
 
-var request = require('request');
+let request = require('request');
 
-var ACCESS_TOKEN = process.env.ACCESS_TOKEN;
-var BOT_URL = process.env.BOT_URL;
+let API_URL = 'https://api.groupme.com/v3/';
+let groups = [];
 
 var bot = {
-    users:  [],
-    bot_id: 0,
-    BOT_NAME: 'MyBot',
-    GROUP_ID: '',
-    lastMessage: '',
 
     /**
-     * Displays a message in chat
-     * @param message to send
+     * Post a message from a bot
+     * POST bots/post
+     * @param message, bot_id
      */
-    echo: function(message) {
-        console.log(bot.BOT_NAME + "says: " + message);
-        var url = 'https://api.groupme.com/v3/bots/post';
-        request({ url: url, method:'POST', body: JSON.stringify({bot_id: bot.bot_id, text: message})}, function(err, res, body){
-        });
-    },
-
-    /**
-     * Deletes the bot from groupme from the predefined GROUP_ID
-     */
-    unregister: function() {
-        var url = 'https://api.groupme.com/v3/bots?token=' + ACCESS_TOKEN;
-        request({url:url, method:'GET'}, function(err, res, body) {
-            var json = JSON.parse(body).response;
-            for (var i = 0; json[i] != undefined; i++) {
-                if (json[i].group_id == bot.GROUP_ID) {
-                    var url2 = 'https://api.groupme.com/v3/bots/destroy?token=' + ACCESS_TOKEN;
-                    request({url:url2, method: 'POST', body: JSON.stringify({bot_id: json[i].bot_id} )},function(err, respons, body) {
-                    });
+    echo: function(message, bot_id) {
+        return new Promise((resolve, reject) => {
+            var url = API_URL + 'bots/post?token=' + process.env.ACCESS_TOKEN;
+            request({ url: url, method:'POST', body: JSON.stringify({ bot_id: bot_id, text: message }) }, (err, res, body) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(body);
                 }
-            }
+            });
         });
     },
 
     /**
-     * Creates a bot with groupme from the predefined GROUP_ID
+     * Remove a bot that you have created by bot_id
+     * POST bots/destroy
+     * @param bot_id
      */
-    register: function() {
-        var url = 'https://api.groupme.com/v3/bots?token=' + ACCESS_TOKEN;
-        var name = bot.BOT_NAME;
-        request( { url : url, method : 'POST', body : JSON.stringify({bot: { name: name, group_id: bot.GROUP_ID, callback_url: BOT_URL}}) },
-            function(error, response, body) {
-                var url2 = 'https://api.groupme.com/v3/bots?token=' + ACCESS_TOKEN;
-                request({url:url2, method:'GET'}, function(err, res, body){
-                    var json = JSON.parse(body).response;
-                    json.forEach(function(data) {
-                        if (data.group_id == bot.GROUP_ID) {
-                            bot.bot_id = data.bot_id;
-                        }
-                    });
-                });
+    leave: function(bot_id) {
+        return new Promise((resolve, reject) => {
+            let url = API_URL + 'bots/destroy?token=' + process.env.ACCESS_TOKEN;
+            request({ url: url, method:'POST', body: JSON.stringify({ bot_id: bot_id })}, (err, res, body) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
             });
+        });
+    },
+
+    /**
+     * Create a bot, bot joins a room with specified json
+     * POST bot
+     * @param json.name (required), json.group_id (required), json.avatar_url (optional), json.callback_url (recommended)
+     */
+    join: function(json) {
+        return new Promise((resolve, reject) => {
+            let bot = {};
+
+            if (!json.name || !json.group_id) { reject({error: 'Must declare bot name and group_id'}); }
+
+            bot.name = json.name;
+            bot.group_id = json.group_id;
+            if (json.avatar_url) { bot.avatar_url = json.avatar_url }
+            if (json.callback_url) { bot.callback_url = json.callback_url; }
+
+
+            let url = API_URL + 'bots?token=' + process.env.ACCESS_TOKEN;
+            request({ url: url, method:'POST', body: JSON.stringify(bot) }, (err, res, body) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
+            });
+        });
+    },
+
+    /**
+     * List bots that you have created
+     * GET bots
+     */
+    list: function() {
+        return new Promise((resolve, reject) => {
+            var url = API_URL + 'bots?token=' + process.env.ACCESS_TOKEN;
+            request.get({url: url, json: true }, (err, res, group) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(group);
+                }
+            });
+        });
     },
 
     /**
@@ -68,6 +96,7 @@ var bot = {
      */
 
     /**
+     * TODO
      * Removes a user from the group
      * @param group_user_id is the group_id of a user you want to remove
      * @param group_id of the group to remove from
@@ -78,17 +107,7 @@ var bot = {
     },
 
     /**
-     * Removes a user from the group
-     * @param group_user_id is the group_id of a user you want to remove
-     * @param group_id of the group to remove from
-     * @param access_token of the user removing the user
-     */
-    removeUserWithToken: function(group_user_id, group_id, access_token) {
-        var url = 'https://api.groupme.com/v3/groups/'+group_id+'/members/'+group_user_id+'/remove?token=' + access_token;
-        request({ url: url, method:'POST'},  function(err, res, body){});
-    },
-
-    /**
+     * TODO
      * Adds a user to the group
      * @param user_id of a user
      * @param group_id of the group to add to
@@ -99,28 +118,8 @@ var bot = {
         request({ url: url, method:'POST', body: JSON.stringify({members: [{nickname: name, user_id: user_id}]})}, function(err, res, body){});
     },
 
-    addUserWithToken: function(user_id, group_id, name, access_token) {
-        var url = 'https://api.groupme.com/v3/groups/'+group_id+'/members/add?token=' + access_token;
-        request({ url: url, method:'POST', body: JSON.stringify({members: [{nickname: name, user_id: user_id}]})}, function(err, res, body){});
-    },
-
     /**
-     * Gets name, group_id and user_id of each user in the group_id
-     * @param group_id to get users from
-     * @return array of users with name, group_id and user_id
-     */
-    updateUsers: function(){
-        bot.users = [];
-        var url = 'https://api.groupme.com/v3/groups/'+bot.GROUP_ID+'?token='+ ACCESS_TOKEN;
-        request({url: url, method: 'GET'}, function(err, res, body){
-            var json = JSON.parse(body).response;
-            json.members.forEach(function(data) {
-                bot.users.push({name: data.nickname, group_id: data.id, user_id: data.user_id});
-            });
-        });
-    },
-
-    /**
+     * TODO
      * Gets users from a specified group_id
      * @param group_id
      * @return array of users
@@ -138,93 +137,59 @@ var bot = {
     },
 
     /**
-     * Gets users from a specified group_id and access_token
-     * @param group_id, access_token, callback
-     * @return array of users
+     * List the authenticated user's active groups.
+     * GET groups
      */
-    getUsersWithToken: function(group_id, access_token, callback) {
-        var users = [];
-        var url = 'https://api.groupme.com/v3/groups/'+group_id+'?token='+ access_token;
-        request({url: url, method: 'GET'}, function(err, res, body){
-            var json = JSON.parse(body).response;
-            if (json != null) {
-                json.members.forEach(function(data) {
-                    users.push({name: data.nickname, group_id: data.id, user_id: data.user_id});
-                });
-            }
-            callback(users);
-        });
-    },
-
-    /**
-     * Prints out a list of groups that the user is a member of
-     */
-    getGroups: function(callback) {
-        var groups = [];
-        var url = 'https://api.groupme.com/v3/groups?token=' + ACCESS_TOKEN;
-        request({url: url, method: 'GET'}, function(err, res, body){
-            var json = JSON.parse(body).response;
-            json.forEach(function(data) {
-                groups.push({name: data.name, group_id:  data.id});
+    getGroups: function() {
+        return new Promise((resolve, reject) => {
+            var url = API_URL + 'groups?token=' + process.env.ACCESS_TOKEN;
+            request.get({url: url, json: true }, (err, res, group) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(group);
+                }
             });
-            callback(groups);
         });
     },
 
     /**
      * Gets the 100 most recent messages
-     * @param callback
+     * GET groups/:group_id/messages
+     * @param group_id
      */
-    getMessages: function(group_id, callback) {
-        var url = 'https://api.groupme.com/v3/groups/'+group_id+'/messages?limit=100&token=' + ACCESS_TOKEN;
-	    request({url: url, method: 'GET'}, function(err, res, body){
-	        var json = JSON.parse(body).response;
-            callback(json);
-	    });
-    },
-
-    /**
-     * Gets all the messages from the current point in time
-     * to may 1st 2015
-     * @param before_id
-     */
-    getAllMessagesBefore: function(group_id, before_id, callback) {
-        var url = 'https://api.groupme.com/v3/groups/'+group_id+'/messages?limit=100&before_id='+before_id+'&token=' + ACCESS_TOKEN;
-        request({url: url, method: 'GET'}, function(err, res, body){
-            var json = JSON.parse(body).response;
-            callback(json);
-            //if the date is after may 1st 2015
-            if (json.messages[0].created_at > 1430515720) {
-                setTimeout(function() {
-                    bot.getAllMessagesBefore(bot.GROUP_ID, json.messages[0].id, callback);
-                }, 200);
-            } else {
-                console.log('done!');
-            }
+    getMessages: function(group_id) {
+        return new Promise((resolve, reject) => {
+            var url = API_URL + 'groups'+group_id+'/messages?limit=100&token=' + process.env.ACCESS_TOKEN;
+            request.get({url: url, json: true }, (err, res, body) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
+            });
         });
     },
 
     /**
      * Like a message
-     * @param message_id
+     * POST messages/:group_id/:message_id/like
+     * @param message_id, group_id
      */
-    like: function(message_id) {
-        var url = 'https://api.groupme.com/v3/messages/'+ bot.GROUP_ID +'/' + message_id +'/like?token=' + ACCESS_TOKEN;
-        request({ url: url, method:'POST'}, function(err, res, body){});
-    },
-
-    /**
-     * Process an image with the groupme image processing service
-     * @param imageUrl
-     * @param callback
-     */
-    processImage: function(imageUrl, callback) {
-        var url = 'https://image.groupme.com/pictures?access_token=' + ACCESS_TOKEN;
-        request({ url: url, method:'POST', file: imageUrl}, function(err, res, body){
-            var json = JSON.parse(body).response;
-            callback(body);
+    like: function(message_id, group_id) {
+        return new Promise((resolve, reject) => {
+            let url = API_URL + 'messages/'+ group_id + '/' + message_id + '/like?token=' + process.env.ACCESS_TOKEN;
+            request({ url: url, method:'POST'}, (err, res, body) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
+            });
         });
     }
+
+    // TODO : unlike
 };
 
 module.exports = bot;
