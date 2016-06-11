@@ -96,43 +96,42 @@ var bot = {
      */
 
     /**
-     * TODO
      * Removes a user from the group
+     * POST /groups/:group_id/members/:membership_id/remove
      * @param group_user_id is the group_id of a user you want to remove
      * @param group_id of the group to remove from
      */
     removeUser: function(group_user_id, group_id) {
-        var url = 'https://api.groupme.com/v3/groups/'+group_id+'/members/'+group_user_id+'/remove?token=' + ACCESS_TOKEN;
-        request({ url: url, method:'POST'},  function(err, res, body){});
+        return new Promise((resolve, reject) => {
+           let url = API_URL + 'groups/'+group_id+'/members' + group_user_id + '/remove?token=' + process.env.ACCESS_TOKEN;
+            request({ url: url, method:'POST' }, (err, res, body) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
+            });
+        });
     },
 
     /**
-     * TODO
-     * Adds a user to the group
+     * TODO : add by phone and email
+     * Adds a members to a group (determined by user_id)
+     * POST /groups/:group_id/members/add
      * @param user_id of a user
      * @param group_id of the group to add to
      * @param name of the user in the chat
      */
     addUser: function(user_id, group_id, name) {
-        var url = 'https://api.groupme.com/v3/groups/'+group_id+'/members/add?token=' + ACCESS_TOKEN;
-        request({ url: url, method:'POST', body: JSON.stringify({members: [{nickname: name, user_id: user_id}]})}, function(err, res, body){});
-    },
-
-    /**
-     * TODO
-     * Gets users from a specified group_id
-     * @param group_id
-     * @return array of users
-     */
-    getUsers: function(group_id, callback) {
-        var users = [];
-        var url = 'https://api.groupme.com/v3/groups/'+group_id+'?token='+ ACCESS_TOKEN;
-        request({url: url, method: 'GET'}, function(err, res, body){
-            var json = JSON.parse(body).response;
-            json.members.forEach(function(data) {
-                users.push({name: data.nickname, group_id: data.id, user_id: data.user_id});
+        return new Promise((resolve, reject) => {
+            let url = API_URL + 'groups/'+group_id+'/members/add?token=' + process.env.ACCESS_TOKEN;
+            request({ url: url, method:'POST',body: JSON.stringify({members: [{nickname: name, user_id: user_id}]})}, (err, res, body) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
             });
-            callback(users);
         });
     },
 
