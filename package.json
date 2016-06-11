@@ -2,12 +2,12 @@
   "name": "groupme-bot",
   "version": "1.0.0",
   "description": "A framework for interacting with the groupme api",
-  "private": true,
   "engines": {
     "node": "6.2.0"
   },
   "scripts": {
-    "start": "nodemon example.js"
+    "start": "nodemon example.js",
+    "test": "jslint --edition=es6 bot.js"
   },
   "repository": {
     "type": "git",

@@ -1,12 +1,13 @@
+'use strict';
+
 // Get environment variables
 require('dotenv').config({silent: true});
 
 let request = require('request');
 
 let API_URL = 'https://api.groupme.com/v3/';
-let groups = [];
 
-var bot = {
+let bot = {
 
     /**
      * Post a message from a bot
